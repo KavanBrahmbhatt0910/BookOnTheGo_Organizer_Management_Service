@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.group3.metaBlog.OTP.Service.OTPServiceTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.325 s -- in com.group3.metaBlog.OTP.Service.OTPServiceTest
