@@ -9,10 +9,10 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.group3</groupId>
-	<artifactId>metaBlog</artifactId>
+	<artifactId>BookOnTheGO</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>metaBlog</name>
-	<description>Meta Blog by group 3</description>
+	<name>BookOnTheGO</name>
+	<description>BookOnTheGO</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

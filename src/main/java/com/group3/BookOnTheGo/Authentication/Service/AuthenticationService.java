@@ -1,19 +1,15 @@
 package com.group3.BookOnTheGo.Authentication.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group3.BookOnTheGo.Authentication.DataTransferObject.*;
 import com.group3.BookOnTheGo.Email.Service.IEmailService;
 import com.group3.BookOnTheGo.Enum.Role;
 import com.group3.BookOnTheGo.Config.ApplicationConfig;
-import com.group3.BookOnTheGo.Exception.MetaBlogException;
+import com.group3.BookOnTheGo.Exception.BookOnTheGoException;
 import com.group3.BookOnTheGo.Jwt.ServiceLayer.JwtService;
 import com.group3.BookOnTheGo.OTP.Service.IOTPService;
 import com.group3.BookOnTheGo.User.Model.User;
 import com.group3.BookOnTheGo.User.Repository.IUserRepository;
-import com.group3.BookOnTheGo.Utils.MetaBlogResponse;
-import io.jsonwebtoken.io.Decoder;
+import com.group3.BookOnTheGo.Utils.BookOnTheGoResponse;
 import jakarta.mail.MessagingException;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
@@ -24,14 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import org.apache.commons.codec.binary.Base64;
-
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-
-import static java.util.Base64.getUrlDecoder;
 
 @Service
 @AllArgsConstructor
@@ -51,7 +40,7 @@ public class AuthenticationService implements IAuthenticationService {
             Optional<User> existingUser = IUserRepository.findByEmail(request.getEmail());
             if (existingUser.isPresent()) {
                 logger.error("User already exists with email: {}", request.getEmail());
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User already exists with this email.")
                         .data(RegisterResponseDto.builder()
@@ -92,7 +81,7 @@ public class AuthenticationService implements IAuthenticationService {
             } catch (MessagingException e) {
                 logger.error("Error sending email to the user with email: {}", request.getEmail());
                 logger.error("Message of the error: {}", e.getMessage());
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("Error sending email to the user.")
                         .build(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -110,7 +99,7 @@ public class AuthenticationService implements IAuthenticationService {
 
             logger.info("JWT token added to the user");
             logger.info("Registration ended successfully with email: {}", request.getEmail());
-            return new ResponseEntity<>(MetaBlogResponse.builder()
+            return new ResponseEntity<>(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("User Created Successfully")
                     .data(RegisterResponseDto.builder()
@@ -119,8 +108,8 @@ public class AuthenticationService implements IAuthenticationService {
                             .role("User")
                             .build())
                     .build(), HttpStatus.CREATED);
-        } catch (MetaBlogException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -134,7 +123,7 @@ public class AuthenticationService implements IAuthenticationService {
             Optional<User> existingUser = IUserRepository.findByEmail(email);
             if (existingUser.isEmpty()) {
                 logger.error("User does not exist with this email");
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User does not exist with this email.")
                         .build(), HttpStatus.NOT_FOUND);
@@ -149,18 +138,18 @@ public class AuthenticationService implements IAuthenticationService {
             } catch (MessagingException e) {
                 logger.error("Error sending email to the user with email: {}", email);
                 logger.error("Message of the error: {}", e.getMessage());
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("Error sending email to the user.")
                         .build(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
             logger.info("OTP sent to this email: {}", email);
-            return new ResponseEntity<>(MetaBlogResponse.builder()
+            return new ResponseEntity<>(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("OTP has been sent to your email successfully.")
                     .build(), HttpStatus.OK);
-        } catch (MetaBlogException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -175,7 +164,7 @@ public class AuthenticationService implements IAuthenticationService {
             Optional<User> userOptional = IUserRepository.findByEmail(request.getEmail());
             if (userOptional.isEmpty()) {
                 logger.error("User not found with email: {}", request.getEmail());
-                return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User not found.")
                         .build());
@@ -186,12 +175,12 @@ public class AuthenticationService implements IAuthenticationService {
             IUserRepository.save(user);
             logger.info("Password reset successfully");
 
-            return ResponseEntity.ok().body(MetaBlogResponse.builder()
+            return ResponseEntity.ok().body(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("Password reset successfully.")
                     .build());
-        } catch (MetaBlogException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -205,18 +194,18 @@ public class AuthenticationService implements IAuthenticationService {
             Optional<User> existingUser = IUserRepository.findByEmail(email);
             if (existingUser.isEmpty()) {
                 logger.error("User does not exist with this email");
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User does not exist with this email.")
                         .build(), HttpStatus.NOT_FOUND);
             }
             logger.info("User found with this email");
-            return new ResponseEntity<>(MetaBlogResponse.builder()
+            return new ResponseEntity<>(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("A user with this email exists.")
                     .build(), HttpStatus.OK);
-        } catch (MetaBlogException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -227,7 +216,7 @@ public class AuthenticationService implements IAuthenticationService {
     public ResponseEntity<Object> login(LoginRequestDto request) {
         try {
             User user = IUserRepository.findByEmail(request.getEmail())
-                    .orElseThrow(() -> new MetaBlogException("User not found"));
+                    .orElseThrow(() -> new BookOnTheGoException("User not found"));
 
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
@@ -239,7 +228,7 @@ public class AuthenticationService implements IAuthenticationService {
             user.setRefreshToken(refreshToken);
             IUserRepository.save(user);
 
-            return new ResponseEntity<>(MetaBlogResponse.builder()
+            return new ResponseEntity<>(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("Login successful")
                     .data(LoginResponseDto.builder()
@@ -248,8 +237,8 @@ public class AuthenticationService implements IAuthenticationService {
                             .role(user.getRole().name())
                             .build())
                     .build(), HttpStatus.OK);
-        } catch (MetaBlogException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());

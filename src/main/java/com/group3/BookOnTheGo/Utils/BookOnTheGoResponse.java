@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class MetaBlogResponse<T> {
+public class BookOnTheGoResponse<T> {
     private Boolean success;
     private String message;
     private T data;

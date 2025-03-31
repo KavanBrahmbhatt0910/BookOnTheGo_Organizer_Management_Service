@@ -1,15 +1,14 @@
 package com.group3.BookOnTheGo.User.Service;
 
-import com.group3.BookOnTheGo.Exception.MetaBlogException;
+import com.group3.BookOnTheGo.Exception.BookOnTheGoException;
 import com.group3.BookOnTheGo.Image.Model.Image;
 import com.group3.BookOnTheGo.Image.Service.ImageService;
 import com.group3.BookOnTheGo.Jwt.ServiceLayer.JwtService;
-import com.group3.BookOnTheGo.User.DataTransferObject.SavedBlogResponseDto;
 import com.group3.BookOnTheGo.User.DataTransferObject.UserDetailsResponseDto;
 import com.group3.BookOnTheGo.User.DataTransferObject.UserUpdateRequestDto;
 import com.group3.BookOnTheGo.User.Model.User;
 import com.group3.BookOnTheGo.User.Repository.IUserRepository;
-import com.group3.BookOnTheGo.Utils.MetaBlogResponse;
+import com.group3.BookOnTheGo.Utils.BookOnTheGoResponse;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -33,7 +31,7 @@ public class UserService implements IUserService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     logger.error("User not found with email: {}", email);
-                    return new MetaBlogException("User not found.");
+                    return new BookOnTheGoException("User not found.");
                 });
     }
 
@@ -45,7 +43,7 @@ public class UserService implements IUserService {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> {
                         logger.error("User not found with ID: {}", id);
-                        return new MetaBlogException("User not found.");
+                        return new BookOnTheGoException("User not found.");
                     });
 
             UserDetailsResponseDto userDetailsResponseDto = UserDetailsResponseDto.builder()
@@ -58,15 +56,15 @@ public class UserService implements IUserService {
                     .bio(user.getBio())
                     .build();
 
-            return ResponseEntity.ok().body(MetaBlogResponse.builder()
+            return ResponseEntity.ok().body(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("User details fetched successfully.")
                     .data(userDetailsResponseDto)
                     .build());
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error fetching user details for ID: {}", id);
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -89,15 +87,15 @@ public class UserService implements IUserService {
                     .bio(user.getBio())
                     .build();
 
-            return ResponseEntity.ok().body(MetaBlogResponse.builder()
+            return ResponseEntity.ok().body(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("User details fetched successfully.")
                     .data(userDetailsResponseDto)
                     .build());
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error fetching user details");
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -122,14 +120,14 @@ public class UserService implements IUserService {
             user.setLinkedinURL(request.getLinkedinURL());
 
             userRepository.save(user);
-            return ResponseEntity.ok().body(MetaBlogResponse.builder()
+            return ResponseEntity.ok().body(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("User details updated successfully.")
                     .build());
         } catch (Exception e) {
             logger.error("Error updating user details");
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());

@@ -4,8 +4,8 @@ import com.group3.BookOnTheGo.Authentication.DataTransferObject.LoginRequestDto;
 import com.group3.BookOnTheGo.Authentication.DataTransferObject.RegisterRequestDto;
 import com.group3.BookOnTheGo.Authentication.DataTransferObject.ResetPasswordRequestDto;
 import com.group3.BookOnTheGo.Authentication.Service.IAuthenticationService;
-import com.group3.BookOnTheGo.Exception.MetaBlogException;
-import com.group3.BookOnTheGo.Utils.MetaBlogResponse;
+import com.group3.BookOnTheGo.Exception.BookOnTheGoException;
+import com.group3.BookOnTheGo.Utils.BookOnTheGoResponse;
 import jakarta.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,10 +28,10 @@ public class AuthenticationController {
     public ResponseEntity<Object> register(@NotNull @RequestBody RegisterRequestDto request) {
         try {
             return authenticationService.register(request);
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error registering user with email: {}", request.getEmail());
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -42,10 +42,10 @@ public class AuthenticationController {
     public ResponseEntity<Object> forgetPassword(@NotNull @RequestParam String email) {
         try {
             return authenticationService.forgetPassword(email);
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error forgetting password for user with email: {}", email);
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -56,10 +56,10 @@ public class AuthenticationController {
     public ResponseEntity<Object> resetPassword(@NotNull @RequestBody ResetPasswordRequestDto request) {
         try {
             return authenticationService.resetPassword(request);
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error resetting password for user with email: {}", request.getEmail());
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -70,16 +70,16 @@ public class AuthenticationController {
     public ResponseEntity<Object> getUser(@NotNull @RequestParam String email) {
         try {
             if (email.isEmpty()) {
-                return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("Email is empty")
                         .build());
             }
             return authenticationService.findUser(email);
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error getting user with email: {}", email);
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -90,8 +90,8 @@ public class AuthenticationController {
     public ResponseEntity<Object> login(@NotNull @RequestBody LoginRequestDto request) {
         try {
             return authenticationService.login(request);
-        } catch (MetaBlogException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());

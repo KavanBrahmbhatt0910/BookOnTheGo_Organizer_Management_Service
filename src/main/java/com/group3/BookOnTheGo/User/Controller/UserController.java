@@ -2,7 +2,7 @@ package com.group3.BookOnTheGo.User.Controller;
 
 import com.group3.BookOnTheGo.User.DataTransferObject.UserUpdateRequestDto;
 import com.group3.BookOnTheGo.User.Service.IUserService;
-import com.group3.BookOnTheGo.Utils.MetaBlogResponse;
+import com.group3.BookOnTheGo.Utils.BookOnTheGoResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +23,7 @@ public class UserController {
     public ResponseEntity<Object> getUserById(@PathVariable Long id, @RequestHeader("Authorization") String token) {
         if (token == null || token.isEmpty()) {
             logger.error("Token not provided");
-            return ResponseEntity.status(401).body(MetaBlogResponse.builder()
+            return ResponseEntity.status(401).body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message("Token not provided")
                     .build());
@@ -35,7 +35,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error fetching user details for ID: {}", id);
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -46,7 +46,7 @@ public class UserController {
     public ResponseEntity<Object> getUserDetails(@RequestHeader("Authorization") String token) {
         if (token == null || token.isEmpty()) {
             logger.error("Token not provided");
-            return ResponseEntity.status(401).body(MetaBlogResponse.builder()
+            return ResponseEntity.status(401).body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message("Token not provided")
                     .build());
@@ -58,7 +58,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error fetching user details");
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
@@ -69,7 +69,7 @@ public class UserController {
     public ResponseEntity<Object> updateUserDetails(@ModelAttribute UserUpdateRequestDto request, @RequestHeader("Authorization") String token) {
         if (token == null || token.isEmpty()) {
             logger.error("Token not provided");
-            return ResponseEntity.status(401).body(MetaBlogResponse.builder()
+            return ResponseEntity.status(401).body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message("Token not provided")
                     .build());
@@ -81,7 +81,7 @@ public class UserController {
         } catch (IllegalArgumentException e) {
             logger.error("Error updating user details");
             logger.error("Message of the error: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message(e.getMessage())
                     .build());
