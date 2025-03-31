@@ -1,6 +1,6 @@
 package com.group3.BookOnTheGo.Email.Service;
 
-import com.group3.BookOnTheGo.Exception.MetaBlogException;
+import com.group3.BookOnTheGo.Exception.BookOnTheGoException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.validation.constraints.NotNull;
@@ -35,7 +35,7 @@ public class EmailService implements IEmailService {
 
             javaMailSender.send(message);
         } catch (MessagingException e) {
-            throw new MetaBlogException("Failed to send reset email: " + e.getMessage());
+            throw new BookOnTheGoException("Failed to send reset email: " + e.getMessage());
         }
     }
 }

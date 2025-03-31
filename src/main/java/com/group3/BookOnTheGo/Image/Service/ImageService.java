@@ -2,13 +2,13 @@ package com.group3.BookOnTheGo.Image.Service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.group3.BookOnTheGo.Exception.MetaBlogException;
+import com.group3.BookOnTheGo.Exception.BookOnTheGoException;
 import com.group3.BookOnTheGo.Image.Model.Image;
 import com.group3.BookOnTheGo.Image.Repository.ImageRepository;
 import com.group3.BookOnTheGo.Jwt.ServiceLayer.JwtService;
 import com.group3.BookOnTheGo.User.Model.User;
 import com.group3.BookOnTheGo.User.Repository.IUserRepository;
-import com.group3.BookOnTheGo.Utils.MetaBlogResponse;
+import com.group3.BookOnTheGo.Utils.BookOnTheGoResponse;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public class ImageService implements IImageService {
                     .build();
             imageRepository.save(image);
             return image;
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error uploading image: {}", e.getMessage());
             return null;
         }
@@ -67,7 +67,7 @@ public class ImageService implements IImageService {
             Optional<User> userOptional = userRepository.findByEmail(userEmail);
             if (userOptional.isEmpty()) {
                 logger.error("User not found: {}", userEmail);
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User not found")
                         .build(), HttpStatus.NOT_FOUND);
@@ -76,20 +76,20 @@ public class ImageService implements IImageService {
             Optional<Image> image = imageRepository.findByName(user.getImageURL());
             if (image.isEmpty()) {
                 logger.error("Error retrieving image: image not found");
-                return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("Image not found")
                         .build());
             }
-            return ResponseEntity.ok(MetaBlogResponse.builder()
+            return ResponseEntity.ok(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("Image retrieved successfully")
                     .data(image.get())
                     .build());
 
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error retrieving image: {}", e.getMessage());
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message("Error retrieving image")
                     .build());
@@ -103,7 +103,7 @@ public class ImageService implements IImageService {
             fos.write(file.getBytes());
             fos.close();
             return convFile;
-        } catch (java.io.IOException | MetaBlogException e) {
+        } catch (java.io.IOException | BookOnTheGoException e) {
             logger.error("Error converting multipart file to file: {}", e.getMessage());
             return null;
         }
@@ -116,7 +116,7 @@ public class ImageService implements IImageService {
             Optional<User> userOptional = userRepository.findByEmail(userEmail);
             if (userOptional.isEmpty()) {
                 logger.error("User not found: {}", userEmail);
-                return new ResponseEntity<>(MetaBlogResponse.builder()
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User not found")
                         .build(), HttpStatus.NOT_FOUND);
@@ -125,13 +125,13 @@ public class ImageService implements IImageService {
             user.setImageURL(url);
             userRepository.save(user);
             logger.info("User image URL set successfully");
-            return ResponseEntity.ok(MetaBlogResponse.builder()
+            return ResponseEntity.ok(BookOnTheGoResponse.builder()
                     .success(true)
                     .message("User image URL set successfully")
                     .build());
-        } catch (MetaBlogException e) {
+        } catch (BookOnTheGoException e) {
             logger.error("Error setting user image URL: {}", e.getMessage());
-            return new ResponseEntity<>(MetaBlogResponse.builder()
+            return new ResponseEntity<>(BookOnTheGoResponse.builder()
                     .success(false)
                     .message("Error setting user image URL")
                     .build(), HttpStatus.INTERNAL_SERVER_ERROR);

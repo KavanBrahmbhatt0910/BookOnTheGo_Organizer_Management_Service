@@ -4,7 +4,7 @@ import com.group3.BookOnTheGo.OTP.Model.OTPModel;
 import com.group3.BookOnTheGo.OTP.Repository.IOTPRepository;
 import com.group3.BookOnTheGo.User.Model.User;
 import com.group3.BookOnTheGo.User.Repository.IUserRepository;
-import com.group3.BookOnTheGo.Utils.MetaBlogResponse;
+import com.group3.BookOnTheGo.Utils.BookOnTheGoResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -58,14 +58,14 @@ public class OTPService implements IOTPService {
         try {
             Optional<User> user = IUserRepository.findByEmail(Email);
             if (user.isEmpty()) {
-                return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                         .success(false)
                         .message("User not found")
                         .build());
             } else {
                 OTPModel otpModel = otpRepository.findByUserId(user.get().getId());
                 if (otpModel == null) {
-                    return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                    return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                             .success(false)
                             .message("OTP not found")
                             .build());
@@ -77,26 +77,26 @@ public class OTPService implements IOTPService {
                         user.get().setIsEmailVerified(true);
                         IUserRepository.save(user.get());
 
-                        return ResponseEntity.ok(MetaBlogResponse.builder()
+                        return ResponseEntity.ok(BookOnTheGoResponse.builder()
                                 .success(true)
                                 .message("OTP Verified successfully")
                                 .data(user.get().getUsername())
                                 .build());
                     } else {
-                        return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                        return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                                 .success(false)
                                 .message("OTP Expired")
                                 .build());
                     }
                 } else {
-                    return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+                    return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                             .success(false)
                             .message("OTP Does not match")
                             .build());
                 }
             }
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(MetaBlogResponse.builder()
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
                     .success(false)
                     .message("OTP Verification Failed with error:" + e.getMessage())
                     .build());
