@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -50,13 +51,10 @@ public class AuthenticationService implements IAuthenticationService {
                                 .build())
                         .build(), HttpStatus.CONFLICT);
             }
-//            if (!Objects.equals(request.getRole(), "User")) {
-//                logger.error("Invalid Role provided in the request which is: {}", request.getRole());
-//                return new ResponseEntity<>(MetaBlogResponse.builder()
-//                        .success(false)
-//                        .message("Invalid Role")
-//                        .build(), HttpStatus.CONFLICT);
-//            }
+            if (Objects.isNull(request.getRole()) || request.getRole().isEmpty()){
+                logger.error("Invalid Role provided in the request which is: {}", request.getRole());
+                request.setRole("Attendee");
+            }
 
             var user = User.builder()
                     .username(request.getUsername())
@@ -64,7 +62,7 @@ public class AuthenticationService implements IAuthenticationService {
                     .password(applicationConfig.passwordEncoder().encode(request.getPassword()))
                     .registerAt((double) (System.currentTimeMillis()))
                     .lastLoginTime((double) (System.currentTimeMillis()))
-                    .role(Role.User)
+                    .role(Role.valueOf(request.getRole()))
                     .isEmailVerified(false)
                     .isAccountLocked(false)
                     .isResetPasswordRequested(false)
@@ -105,7 +103,7 @@ public class AuthenticationService implements IAuthenticationService {
                     .data(RegisterResponseDto.builder()
                             .accessToken(accessToken)
                             .refreshToken(refreshToken)
-                            .role("User")
+                            .role(user.getRole().name())
                             .build())
                     .build(), HttpStatus.CREATED);
         } catch (BookOnTheGoException e) {
@@ -236,6 +234,35 @@ public class AuthenticationService implements IAuthenticationService {
                             .refreshToken(refreshToken)
                             .role(user.getRole().name())
                             .build())
+                    .build(), HttpStatus.OK);
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
+                    .success(false)
+                    .message(e.getMessage())
+                    .build());
+        }
+    }
+
+    @Override
+    public ResponseEntity<Object> logout(String email) {
+        try {
+            logger.info("Logging out user with email: {}", email);
+            Optional<User> existingUser = IUserRepository.findByEmail(email);
+            if (existingUser.isEmpty()) {
+                logger.error("User does not exist with this email");
+                return new ResponseEntity<>(BookOnTheGoResponse.builder()
+                        .success(false)
+                        .message("User does not exist with this email.")
+                        .build(), HttpStatus.NOT_FOUND);
+            }
+            User user = existingUser.get();
+            user.setAccessToken(null);
+            user.setRefreshToken(null);
+            IUserRepository.save(user);
+            logger.info("User logged out successfully");
+            return new ResponseEntity<>(BookOnTheGoResponse.builder()
+                    .success(true)
+                    .message("User logged out successfully.")
                     .build(), HttpStatus.OK);
         } catch (BookOnTheGoException e) {
             return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()

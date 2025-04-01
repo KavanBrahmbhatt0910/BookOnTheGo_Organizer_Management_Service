@@ -97,4 +97,16 @@ public class AuthenticationController {
                     .build());
         }
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Object> logout(@NotNull @RequestParam String email) {
+        try {
+            return authenticationService.logout(email);
+        } catch (BookOnTheGoException e) {
+            return ResponseEntity.badRequest().body(BookOnTheGoResponse.builder()
+                    .success(false)
+                    .message(e.getMessage())
+                    .build());
+        }
+    }
 }
