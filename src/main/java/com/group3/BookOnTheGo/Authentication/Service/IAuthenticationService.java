@@ -9,4 +9,6 @@ public interface IAuthenticationService {
     ResponseEntity<Object> resetPassword(ResetPasswordRequestDto request);
     ResponseEntity<Object> findUser(String email);
     ResponseEntity<Object> login(LoginRequestDto request);
+
+    ResponseEntity<Object> logout(String email);
 }
